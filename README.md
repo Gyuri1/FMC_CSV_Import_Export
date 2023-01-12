@@ -23,9 +23,9 @@ How to use:
 
 2. You can modify the Policy ACP file and rename ALL of the 3 files to the new ones, for example:
 
-    BULK-ACP.csv         -> BULK-ACP1.csv
-    BULK-ACP_policy.csv  -> BULK-ACP1_policy.csv
-    BULK-ACP_policy.json -> BULK-ACP1_policy.json
+    BULK-ACP.csv         -> BULK-ACP1.csv 
+    BULK-ACP_policy.csv  -> BULK-ACP1_policy.csv 
+    BULK-ACP_policy.json -> BULK-ACP1_policy.json  
   
   
 3.  CSV import to FMC:
