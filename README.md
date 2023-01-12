@@ -12,7 +12,13 @@ This tool contains 4 python files:
 
 - csv_export.py : This script will create NEW FMC ACP Policy based on Object and Policy CSV files 
 
-#How to use:
+# How to install:
+
+  Copy these 4 files into a working directory and make sure requests is an installed python library:
+  
+  `pip install requests`
+
+# How to use:
 
 1.  Export from FMC:
 
