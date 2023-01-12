@@ -44,7 +44,13 @@ This tool contains 4 python files:
     
     
 
-WARNING: Tool currently does NOT support users field. This is an FMC Policy Creation limit.
+# WARNING: 
+
+    Tool currently does NOT support users field. This is an FMC Policy Creation limit.
+ 
+    Please review the NEW policy before you deploy it!
+    
+    Use it at your own risk!  
 
 
 
