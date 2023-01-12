@@ -12,7 +12,7 @@ This tool contains 4 python files:
 
 - csv_export.py : This script will create NEW FMC ACP Policy based on Object and Policy CSV files 
 
-How to use:
+#How to use:
 
 1.  Export from FMC:
 
@@ -21,11 +21,10 @@ How to use:
     where Global is the domain name and BULK-ACP is the name of the ACP
 
 
-2. You can modify the Policy ACP file and rename ALL of the 3 files to the new ones, for example:
-
-    BULK-ACP.csv         -> BULK-ACP1.csv 
-    BULK-ACP_policy.csv  -> BULK-ACP1_policy.csv 
-    BULK-ACP_policy.json -> BULK-ACP1_policy.json  
+2. You can modify the Policy ACP file and please **rename ALL of the 3 files** to the new ones, for example:
+  BULK-ACP.csv         -> BULK-ACP1.csv 
+  BULK-ACP_policy.csv  -> BULK-ACP1_policy.csv 
+  BULK-ACP_policy.json -> BULK-ACP1_policy.json  
   
   
 3.  CSV import to FMC:
