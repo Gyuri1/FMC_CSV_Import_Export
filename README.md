@@ -4,7 +4,7 @@
 This tool contains 4 python files: 
 
 - fmc_config.py : FMC access parameters
-                  Please update it with Your FMC's address and credentials!
+                  **Please update it with Your FMC's address and credentials!**
                 
 - fmc_class.py  : FMC REST API requests
 
