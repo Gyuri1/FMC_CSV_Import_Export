@@ -23,9 +23,11 @@ This tool contains 4 python files:
 
 2. You can modify the Policy ACP file and please **rename ALL of the 3 files** to the new ones, for example:
 
-  BULK-ACP.csv         -> BULK-ACP1.csv 
-  BULK-ACP_policy.csv  -> BULK-ACP1_policy.csv 
-  BULK-ACP_policy.json -> BULK-ACP1_policy.json  
+  BULK-ACP.csv         -> BULK-ACP**1**.csv 
+ 
+  BULK-ACP_policy.csv  -> BULK-ACP**1**_policy.csv 
+  
+  BULK-ACP_policy.json -> BULK-ACP**1**_policy.json  
   
   
 3.  CSV import to FMC:
