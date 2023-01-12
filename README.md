@@ -1,8 +1,8 @@
 # FMC_CSV_Import_Export
 
 
-This tool can create a CSV file from Cisco FMC Access Control Policy (ACP) and can import back the modified ACP into FMC. 
-It contains 4 python files: 
+This tool can create a CSV file from Cisco FMC Access Control Policy (ACP)  
+and can import back the modified ACP into FMC. It contains 4 python files: 
 
 - fmc_config.py : FMC access parameters  
    **Please update it with Your FMC's address and credentials!**
