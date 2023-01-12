@@ -21,7 +21,7 @@ This tool contains 4 python files:
     where Global is the domain name and BULK-ACP is the name of the ACP
 
 
-2. You can modify the Policy ACP file and please **rename ALL of the 3 files** to the new ones, for example:
+2. You can modify the Policy ACP file using the **known objects** and please **rename ALL of the 3 files** to the new ones, for example:
 
    > BULK-ACP.csv         -> BULK-ACP**1**.csv 
  
