@@ -16,7 +16,7 @@ This tool contains 4 python files:
 
 1.  Export from FMC:
 
-    python3 fmc_export.py Global BULK-ACP
+    `python3 fmc_export.py Global BULK-ACP`
 
     where Global is the domain name and BULK-ACP is the name of the ACP
 
