@@ -23,16 +23,16 @@ This tool contains 4 python files:
 
 2. You can modify the Policy ACP file and please **rename ALL of the 3 files** to the new ones, for example:
 
- > BULK-ACP.csv         -> BULK-ACP**1**.csv 
+   > BULK-ACP.csv         -> BULK-ACP**1**.csv 
  
- > BULK-ACP_policy.csv  -> BULK-ACP**1**_policy.csv 
+   > BULK-ACP_policy.csv  -> BULK-ACP**1**_policy.csv 
   
- > BULK-ACP_policy.json -> BULK-ACP**1**_policy.json  
+   > BULK-ACP_policy.json -> BULK-ACP**1**_policy.json  
   
   
 3.  CSV import to FMC:
 
-    python3 csv_import.py Global BULK-ACP1.csv
+    `python3 csv_import.py Global BULK-ACP1.csv`
     
     where Global is the domain name and BULK-ACP.csv is the name of the NEW ACP file.
     
