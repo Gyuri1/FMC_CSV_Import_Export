@@ -34,7 +34,7 @@ and can import back the modified ACP into FMC. It contains 4 python files:
  
    > BULK-ACP_policy.csv  -> BULK-ACP**1**_policy.csv 
   
-   > BULK-ACP_policy.json -> BULK-ACP**1**_policy.json  
+   > BULK-ACP_objects.json -> BULK-ACP**1**_objects.json  
   
   
 3.  CSV import to FMC:
