@@ -9,7 +9,6 @@
 #  Check the URLCategory REAL NAME with ;
 #  element_name.split(reputation_separator)[0]
 
-#  Check GEO IP !
 
 # import required dependencies
 import sys
@@ -34,7 +33,7 @@ def find_id(object_db, name, obj_type):
 def find_type(object_db, name):
     r=''
     for i in object_db:
-        if (i['name']==name) and ((i['type']== 'Host') or (i['type']== 'Network') ):
+        if (i['name']==name) and (i['type']== 'Host' or i['type']== 'Network' or i['type']== 'Continent' or i['type']== 'Country'  ):
             r=i['type']
     return r  
 
@@ -99,6 +98,12 @@ def CSV_policy(fmc1, acp_id, new_policy, database, object_db):
                 if object_id == '':
                     object_id = find_id(object_db, element_name, 'NetworkGroup') 
 
+                if object_id == '':
+                    object_id = find_id(object_db, element_name, 'Continent')
+
+                if object_id == '':
+                    object_id = find_id(object_db, element_name, 'Country') 
+                
                 # lits
                 if object_id =='':
                     if '/' in element_name:
@@ -115,8 +120,7 @@ def CSV_policy(fmc1, acp_id, new_policy, database, object_db):
             elif lits != '':
                 rule1['sourceNetworks'] = {'literals': lits}
             elif objs != '':
-                rule1['sourceNetworks'] = {'objects': objs}
-
+                rule1['sourceNetworks'] = {'objects': objs} 
 
         if rule['destinationNetworks']:
             lits = []
@@ -130,7 +134,14 @@ def CSV_policy(fmc1, acp_id, new_policy, database, object_db):
                     object_id = find_id(object_db, element_name, 'Host')
 
                 if object_id == '':
-                    object_id = find_id(object_db, element_name, 'NetworkGroup')    
+                    object_id = find_id(object_db, element_name, 'NetworkGroup')
+
+                if object_id == '':
+                    object_id = find_id(object_db, element_name, 'Continent') 
+
+                if object_id == '':
+                    object_id = find_id(object_db, element_name, 'Country') 
+             
 
                 # lits
                 if object_id =='':
@@ -280,12 +291,20 @@ def CSV_policy(fmc1, acp_id, new_policy, database, object_db):
                 else:
                     # objects 
                     if  reputation_separator in element_name:
-                        object_id = find_id(object_db, element_name.split(reputation_separator)[0], 'URLCategory')
-                        # >>> CHECK THE REAL NAME WITH ;
+
                         real_name = element_name.split(reputation_separator)[0]
+
+                        # CHECK THE REAL NAME WITH ;
+                        # Object file contains the whole name of this Category
+                        if real_name=='Conventions':
+                            real_name = 'Conventions, Conferences and Trade Shows'
+
+                        #print(">>",real_name)    
+                        object_id = find_id(object_db, real_name, 'URLCategory')
 
                         if object_id=='':
                             print(f'Error: category not found: {element_name}')
+                            exit()
                         objs.append({"category":{"name":real_name,"id":object_id,"type":"URLCategory"},"type":"UrlCategoryAndReputation","reputation":element_name.split(reputation_separator)[1][0: -1]})  
                             
                     else:

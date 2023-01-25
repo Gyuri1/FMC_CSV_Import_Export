@@ -70,12 +70,25 @@ class fmc (object):
         path = "/api/fmc_config/v1/domain/" + self.uuid + "/policy/accesspolicies"
         server = "https://"+self.host
         url = server + path
+        more_items = []
         try:
-            r = requests.get(url, headers=self.headers, verify=False)
+            session = requests.Session()
+            r = session.get(url, headers=self.headers, verify=False)
             status_code = r.status_code
             resp = r.text
             json_response = json.loads(resp)
-            return json_response
+            final_response=json_response
+
+            if json_response['paging']:
+                num_pages=json_response['paging']['pages']
+                print('Policy Pages:', num_pages)
+                for page in range(2, num_pages + 1):
+                    url=json_response['paging']['next'][0]
+                    json_response = session.get(url, headers=self.headers, verify=False).json()
+                    more_items.extend(json_response["items"])
+                final_response['items']+=more_items 
+
+            return final_response
         except requests.exceptions.HTTPError as err:
             print ("Error in connection --> " + str(err))
         finally:
@@ -96,7 +109,7 @@ class fmc (object):
             json_response = json.loads(resp)
            
             final_response=json_response
-            final_list= json_response['items']
+            #final_list= json_response['items']
          
             if json_response['paging']:
                 num_pages=json_response['paging']['pages']

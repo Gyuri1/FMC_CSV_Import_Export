@@ -321,20 +321,21 @@ def parse_rule(rule, object_db):
                 else:
                     temp_list.append(i['category']['name']+'['+i['reputation']+']')
             
-                store_an_object(object_db, i['category'])    
-
+                store_an_object(object_db, i['category'])   
 
             if len(temp_list) > 1:
                 cats = '; '.join(temp_list)
             else:
-                cats = temp_list[0]
+                cats = temp_list[0]    
 
         if (lits != '') and (cats != ''):
             R_URLS = '; '.join([lits,cats])
         elif lits != '':
             R_URLS = lits
-        elif objs != '':
+        elif cats != '':
             R_URLS = cats
+
+        #print(">> URLs:", R_URLS)    
       
     # Source SGTs
     if 'sourceSecurityGroupTags' in rule:
@@ -556,6 +557,7 @@ def main():
     for acp in acps["items"]:
         if acp["name"] == target_acp:
             acp_id= acp["id"]
+        #sprint(">> acp name:",acp['name'])    
 
     if acp_id == "":
         print(f"ERROR: {target_acp} policy cannot be found!")
