@@ -15,7 +15,7 @@ and can import back the modified ACP into FMC. It contains 4 python files:
 
 # How to install:
 
-  Copy these 4 files into a working directory and make sure requests is an installed python library:
+  Copy these 4 files into a working directory and make sure `requests` is an installed python library:
   
   `pip install requests`
 
@@ -32,9 +32,9 @@ and can import back the modified ACP into FMC. It contains 4 python files:
 
    > BULK-ACP.csv         -> BULK-ACP**1**.csv 
  
-   > BULK-ACP_policy.csv  -> BULK-ACP**1**_policy.csv 
+   > BULK-ACP_policy.json  -> BULK-ACP**1**_policy.json
   
-   > BULK-ACP_objects.json -> BULK-ACP**1**_objects.json  
+   > BULK-ACP_objects.csv -> BULK-ACP**1**_objects.csv 
   
   
 3.  CSV import to FMC:
