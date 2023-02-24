@@ -49,7 +49,7 @@ and can import back the modified ACP into FMC. It contains 4 python files:
 
 Tool currently does NOT support users field. This is an FMC Policy Creation limit.
 
-Please review the NEW policy before you deploy it!
+Please review the NEW policy before deploying it!
     
 Use it at your own risk! THIS IS DEMO CODE - NO WARRANTY OR SUPPORT IS IMPLIED OR PROVIDED!
     
