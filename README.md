@@ -23,7 +23,7 @@ and can import back the modified ACP into FMC. It contains 4 python files:
 
 1.  Export from FMC:
 
-    `python3 fmc_export.py Global BULK-ACP`
+    `python fmc_export.py Global BULK-ACP`
 
     where Global is the domain name and BULK-ACP is the name of the ACP
 
@@ -39,7 +39,7 @@ and can import back the modified ACP into FMC. It contains 4 python files:
   
 3.  CSV import to FMC:
 
-    `python3 csv_import.py Global BULK-ACP1.csv`
+    `python csv_import.py Global BULK-ACP1.csv`
     
     where Global is the domain name and BULK-ACP.csv is the name of the NEW ACP file.
     
@@ -52,6 +52,8 @@ and can import back the modified ACP into FMC. It contains 4 python files:
     Please review the NEW policy before you deploy it!
     
     Use it at your own risk!  
+    
+    It was tested with FMC 7.2 and 7.3 versions as well, but older releases were not tested. 
 
 
 
