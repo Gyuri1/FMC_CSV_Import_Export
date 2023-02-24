@@ -51,7 +51,7 @@ Tool currently does NOT support users field. This is an FMC Policy Creation limi
 
 Please review the NEW policy before you deploy it!
     
-Use it at your own risk!  
+Use it at your own risk! THIS IS DEMO CODE - NO WARRANTY OR SUPPORT IS IMPLIED OR PROVIDED!
     
 It was tested with FMC 7.2 and 7.3 versions as well, but older releases were not tested. 
 
