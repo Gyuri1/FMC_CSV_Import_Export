@@ -28,7 +28,7 @@ and can import back the modified ACP into FMC. It contains 4 python files:
     where Global is the domain name and BULK-ACP is the name of the ACP
 
 
-2. You can modify the Policy ACP file using the **known objects** and please **rename ALL of the 3 files** to the new ones, for example:
+2. You can modify the Policy ACP CSV file using the **known objects** and please **rename ALL of the 3 files** to the new ones, for example:
 
    > BULK-ACP.csv         -> BULK-ACP**1**.csv 
  
@@ -47,13 +47,13 @@ and can import back the modified ACP into FMC. It contains 4 python files:
 
 # WARNING: 
 
-    Tool currently does NOT support users field. This is an FMC Policy Creation limit.
- 
-    Please review the NEW policy before you deploy it!
+Tool currently does NOT support users field. This is an FMC Policy Creation limit.
+
+Please review the NEW policy before you deploy it!
     
-    Use it at your own risk!  
+Use it at your own risk!  
     
-    It was tested with FMC 7.2 and 7.3 versions as well, but older releases were not tested. 
+It was tested with FMC 7.2 and 7.3 versions as well, but older releases were not tested. 
 
 
 
