@@ -34,6 +34,7 @@ class fmc (object):
         self.headers = {'Content-Type': 'application/json'}
         self.uuid = ""
         self.domains = {}
+        self.acl_query_limit ='500'
 
     # common function    
     def tokenGeneration(self, domain):
@@ -97,7 +98,7 @@ class fmc (object):
 
     # export funtion 
     def get_acp_rules(self, policy_id):
-        path = "/api/fmc_config/v1/domain/" + self.uuid + "/policy/accesspolicies/"+policy_id+"/accessrules?expanded=true"
+        path = "/api/fmc_config/v1/domain/" + self.uuid + "/policy/accesspolicies/"+policy_id+"/accessrules?limit="+self.acl_query_limit+"&expanded=true"
         server = "https://"+self.host
         url = server + path
         more_items = []
@@ -116,8 +117,11 @@ class fmc (object):
                 print('Rule Pages:', num_pages)
                 for page in range(2, num_pages + 1):
                     url=json_response['paging']['next'][0]
-                    json_response = session.get(url, headers=self.headers, verify=False).json()
+                    resp=session.get(url, headers=self.headers, verify=False)
+                    print("Response status code:", resp.status_code)
+                    json_response = resp.json()
                     more_items.extend(json_response["items"])
+
                 final_response['items']+=more_items 
 
             return final_response
