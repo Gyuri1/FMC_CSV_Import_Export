@@ -25,7 +25,9 @@ and can import back the modified ACP into FMC. It contains 4 python files:
 
     `python fmc_export.py Global BULK-ACP`
 
-    where Global is the domain name and BULK-ACP is the name of the ACP
+    where Global is the domain name and BULK-ACP is the name of the ACP.
+
+    This is the syntax of a non-Global domain, like DC:  `Global\DC`.
 
 
 2. You can modify the Policy ACP CSV file using the **known objects** and please **rename ALL of the 3 files** to the new ones, for example:
