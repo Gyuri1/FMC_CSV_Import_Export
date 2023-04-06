@@ -58,7 +58,7 @@ PRs are welcome!
     
 It was tested with FMC 7.2 and 7.3 versions as well, but older releases were not tested. 
 
-
-
+Version 2: 
+Work in progress about `csv_import.py` applications and users categories so the script may fail now with these items.  
     
 
