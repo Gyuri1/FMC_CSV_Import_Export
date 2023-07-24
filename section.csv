@@ -1,0 +1,5 @@
+number,name,enabled,action,section,category,sourceZones,destinationZones,sourceNetworks,destinationNetworks,vlanTags,users,applications,sourcePorts,destinationPorts,urls,sourceSecurityGroupTags,destinationSecurityGroupTags,sourceDynamicObjects,destinationDynamicObjects,endPointDeviceTypes,networkAccessDeviceIPs,ipsPolicy,variableSet,filePolicy,logBegin,logEnd,sendEventsToFMC,enableSyslog,snmpConfig,commentHistoryList
+1,line1,True,ALLOW,Mandatory,--Undefined--,,,,,,,,,sip_tls_not_inspected,,,,,,,,,Default Set,,False,False,False,False,,
+2,line2,True,ALLOW,Mandatory,--Undefined--,,,,,,,Risks:Very Low,,,,,,,,,,,Default Set,,False,False,False,False,,
+3,Line3,True,ALLOW,Mandatory,cat_1_in_mand,,,,,,,,,SSH,,,,,,,,,Default Set,,False,False,False,False,,
+4,line4,True,ALLOW,Default,--Undefined--,,,,,,,HTTPS,,,,,,,,,,,Default Set,,False,False,False,False,,
