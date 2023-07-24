@@ -248,12 +248,13 @@ class fmc (object):
 
 
     # import function
-    def createRule(self, data, policy_id):
+    def createRule(self, data, policy_id, section_cat):
         """Create rule with data given."""
-        path = "/api/fmc_config/v1/domain/" + self.uuid + "/policy/accesspolicies/" + policy_id + "/accessrules?bulk=true"
+        path = "/api/fmc_config/v1/domain/" + self.uuid + "/policy/accesspolicies/" + policy_id + "/accessrules?bulk=true"+section_cat
         server = "https://"+self.host
         url = server + path
         try:
+            #print(f"DEBUG>> URL: {url}")
             r = requests.post(url, data=json.dumps(data), headers=self.headers, verify=False)
             status_code = r.status_code
             resp = r.text
@@ -264,7 +265,8 @@ class fmc (object):
                 print ("error occured in POST -->" + resp)
             return True
         except requests.exceptions.HTTPError as err:
-            print ("Error in connection --> " + str(err) + resp + "\nData:"+ json.dumps(data))
+            print ("Error in connection --> " + str(err) + resp + "\nData:"+ json.dumps(data, indent=4))
+            return False
         finally:
             if r:
                 r.close()
@@ -292,17 +294,21 @@ class fmc (object):
                 r.close()
 
     # import function
-    def createPolicyCat(self, policy_id, category, section):
-        """ Create Category """
+    def createPolicyCat(self, policy_id, category, section, where_to):
+        """ Create Category """          
+        #                                                          "&insertAfter=RuleIndex"
         path = "/api/fmc_config/v1/domain/" + self.uuid + "/policy/accesspolicies/" + policy_id + "/categories?section="+section
         data={ "type": "Category","name": category}
         server = "https://" + self.host
         url = server + path
         try:
+            #print(f"DEBUG>> CAT URL: {url}")
             r = requests.post(url, data=json.dumps(data), headers=self.headers, verify=False)
             status_code = r.status_code
             resp = r.text
             json_response = json.loads(resp)
+
+            #print(f"DEBUG>> CAT URL data: {data}")
             if status_code != 201 and status_code != 202:
                 r.raise_for_status()
                 print("error occured in POST -->" + resp)

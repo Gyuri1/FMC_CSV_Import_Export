@@ -8,6 +8,9 @@
 #  Handle Policy's PreFilter, Security Intell and SSL Decyrption
 #  Check the URLCategory REAL NAME with ;
 #  element_name.split(reputation_separator)[0]
+#
+#  Version 2.0 
+#  Updated:
 
 
 # import required dependencies
@@ -44,7 +47,11 @@ def CSV_policy(fmc1, acp_id, new_policy, database, object_db):
     linenumber=0
     number_of_bulk_rule = 0 
     known_categories=[]
-    MAX_BULK = 100
+    #MAX_BULK = 500
+    MAX_BULK = 500
+
+    current_section= database[0]['section']
+    current_category = database[0]['category']
 
     print("Creating rules:") 
     print("Number of lines: ", len(database))
@@ -62,7 +69,7 @@ def CSV_policy(fmc1, acp_id, new_policy, database, object_db):
         # Check Category:
         if (rule['category'] !='--Undefined--') and (rule['category'] !='') and (rule['category'] not in known_categories):
             known_categories.append(rule['category'])
-            fmc1.createPolicyCat(acp_id, str(rule['category']), str(rule['section']))
+            fmc1.createPolicyCat(acp_id, str(rule['category']), str(rule['section']), where_to=str(linenumber-1) )
             print(f"Creating New Category: {rule['category']}")
 
         rule1={
@@ -75,7 +82,41 @@ def CSV_policy(fmc1, acp_id, new_policy, database, object_db):
         rule1['action']= rule['action']
         rule1['enabled']= rule['enabled']
         rule1['name']= rule['name']
-        print(f"Rule name:{rule1['name']}")
+
+
+        #SECTION, CATEGORY HANDLING
+
+        #rule1['section']= rule['section']
+        #rule1['section']= 'mandatory'
+        rule1['category'] =rule['category']
+
+        #If a category is specified, a section cannot be specified.
+        if rule['category'] == "--Undefined--":
+                rule1['section'] = rule['section']
+
+    
+        if (current_category !=  rule['category']) or (current_section != rule['section']):
+            print(">> Uploading the rules because of new section/category .. ") 
+            # section=mandatory/default
+            # If a category is specified, a section cannot be specified.
+            if current_category != "--Undefined--":
+                section_cat = "&category="+current_category
+            else:    
+                section_cat = "&section="+current_section.lower()
+
+            r = fmc1.createRule(bulk_rules, acp_id, section_cat = section_cat )
+            if  r != True:
+                print(">>")
+                exit() 
+            number_of_bulk_rule = 0
+            bulk_rules = []
+
+            current_section = rule['section']
+            current_category = rule['category']
+
+
+
+        print(f"{linenumber} {current_section} {current_category} Rule name:{rule1['name']}")
          
         # Check the fields and copy to rule1
         if rule['sourceZones']:
@@ -104,6 +145,13 @@ def CSV_policy(fmc1, acp_id, new_policy, database, object_db):
                 if object_id == '':
                     object_id = find_id(object_db, element_name, 'Country') 
                 
+                if object_id == '':
+                    object_id = find_id(object_db, element_name, 'Range')
+
+                if object_id == '':
+                    object_id = find_id(object_db, element_name, 'FQDN')    
+
+
                 # lits
                 if object_id =='':
                     if '/' in element_name:
@@ -141,7 +189,12 @@ def CSV_policy(fmc1, acp_id, new_policy, database, object_db):
 
                 if object_id == '':
                     object_id = find_id(object_db, element_name, 'Country') 
-             
+
+                if object_id == '':
+                    object_id = find_id(object_db, element_name, 'Range') 
+
+                if object_id == '':
+                    object_id = find_id(object_db, element_name, 'FQDN')                    
 
                 # lits
                 if object_id =='':
@@ -225,16 +278,69 @@ def CSV_policy(fmc1, acp_id, new_policy, database, object_db):
             print("WARNING: Rule's 'users' field is not supported yet!")     
         
 
-        if rule['applications']:    
-            rule1['applications']={'applications':[{'name':element.strip(), 'type': 'Application', 'id': find_id(object_db, element.strip(), 'Application') } for element in rule['applications'].split(';')]}
-            
+        if rule['applications']:
+            """
+            objs = [] 
+            for element in rule['applications'].split(';'):
+                if ':' in element:
+                    key = element.split(':')[0]
+                    if key == 'Categories':
+                    objs.append({'categories'})   
+            """        
+
+            #rule1['applications']={'applications':[{'name':element.strip(), 'type': 'Application', 'id': find_id(object_db, element.strip(), 'Application') } for element in rule['applications'].split(';')]}
+           
+            objs = [] 
+            filters= []
+            for element in rule['applications'].split(';'):
+                object_name = element.strip()
+                object_id = find_id(object_db, object_name, 'Application')
+                if object_id :
+                    objs.append({ 'name' : object_name, "id": object_id,"type":"Application"})
+
+                if object_id == "":
+                    if "Risks:" in object_name:
+                        object_name=object_name.split('Risks:')[1]
+                        object_id = find_id(object_db, object_name, 'ApplicationRisk')
+                        if object_id :
+                            filters.append({'risks': [{ 'name' : object_name, "id": object_id,"type":"ApplicationRisk"}]})
+
+                           
+                    
+                if object_id == "":
+                    print(">> ERROR: app ID not found !", object_name) 
+                    exit()
+               
+            if objs:
+                rule1['applications'] = {'applications': objs}
+
+            if filters:
+                rule1['applications'] = {'inlineApplicationFilters': filters}
+
+                    
+
         if rule['sourcePorts']:
             lits = []
             objs = [] 
             for element in rule['sourcePorts'].split(';'):
                 element_name = element.strip()
 
-                if ('TCP:' in element_name) or ('UDP:' in element_name):
+                if   element_name == "TCP" :
+                    lits.append({'type': 'PortLiteral', 'protocol': '6'})
+                elif element_name == "UDP":    
+                    lits.append({'type': 'PortLiteral', 'protocol': '17'})
+
+                elif element_name == "ICMP":    
+                    lits.append({'type': 'ICMPv4PortLiteral', 'protocol': '1'}) 
+
+                elif ('ICMP:' in element_name):
+                    lits.append({'type': 'ICMPv4PortLiteral', 'protocol': '1', 'icmpType': element_name.split(':')[1]})        
+
+                #{'type': 'ICMPv4PortLiteral', 'protocol': '1', 'icmpType': '0'}
+    
+               
+
+                elif ('TCP:' in element_name) or ('UDP:' in element_name):
                     #lits
                     lits.append({'type': 'PortLiteral', 'port': element_name.split(':')[1] ,'protocol': 6 if 'TCP' in element_name else 17 })
                 elif str(element_name).isnumeric():
@@ -242,7 +348,24 @@ def CSV_policy(fmc1, acp_id, new_policy, database, object_db):
                 else:
                     # objects 
                     object_id = find_id(object_db, element_name, 'ProtocolPortObject')
+                    if object_id != '':
+                        objs.append({'type': 'ProtocolPortObject','id': object_id,'name':element_name})
+
+                    if object_id == '':
+                        object_id = find_id(object_db, element_name, 'ICMPV4Object')
+                        if object_id != '':
+                            objs.append({'type': 'ICMPV4Object','id': object_id,'name':element_name})   
+
+                    if object_id == '':
+                        object_id = find_id(object_db, element_name, 'PortObjectGroup')
+                        if object_id != '':
+                            objs.append({'type': 'ProtocolPortObject','id': object_id,'name':element_name})
+
+                    if object_id == '':
+                        print(">>> ERROR: category not found:",element,">>",element_name )    
                     objs.append({'type': 'ProtocolPortObject','id': object_id,'name':element_name})
+
+
 
             if (lits != '') and (objs != ''):
                 rule1['sourcePorts']= {'literals': lits, 'objects': objs} 
@@ -257,18 +380,42 @@ def CSV_policy(fmc1, acp_id, new_policy, database, object_db):
             for element in rule['destinationPorts'].split(';'):
                 element_name = element.strip()
 
-                if ('TCP:' in element_name) or ('UDP:' in element_name):
+                if   element_name == "TCP" :
+                    lits.append({'type': 'PortLiteral', 'protocol': '6'})
+                elif element_name == "UDP" :   
+                    lits.append({'type': 'PortLiteral', 'protocol': '17'})
+
+                elif element_name == "ICMP":    
+                    lits.append({'type': 'ICMPv4PortLiteral', 'protocol': '1'}) 
+
+                elif ('ICMP:' in element_name):
+                    lits.append({'type': 'ICMPv4PortLiteral', 'protocol': '1', 'icmpType': element_name.split(':')[1]})   
+
+                elif ('TCP:' in element_name) or ('UDP:' in element_name):
                     #lits
                     lits.append({'type': 'PortLiteral', 'port': element_name.split(':')[1] ,'protocol': 6 if 'TCP' in element_name else 17 })
                 elif str(element_name).isnumeric():
                     lits.append({'type': 'PortLiteral', 'protocol': element_name })
                     
                 else:
-                    # objects 
+                 # objects 
                     object_id = find_id(object_db, element_name, 'ProtocolPortObject')
+                    if object_id != '':
+                        objs.append({'type': 'ProtocolPortObject','id': object_id,'name':element_name})
+
                     if object_id == '':
-                        print(">>> ERROR: category not found:",element,">>",element_name )    
-                    objs.append({'type': 'ProtocolPortObject','id': object_id,'name':element_name})
+                        object_id = find_id(object_db, element_name, 'ICMPV4Object')
+                        if object_id != '':
+                            objs.append({'type': 'ICMPV4Object','id': object_id,'name':element_name})   
+
+                    if object_id == '':
+                        object_id = find_id(object_db, element_name, 'PortObjectGroup')
+                        if object_id != '':
+                            objs.append({'type': 'ProtocolPortObject','id': object_id,'name':element_name})
+
+                    if object_id == '':
+                        print(">>> WARNING: category not found:",element,">>",element_name )
+                        objs.append({'type': 'ProtocolPortObject','id': object_id,'name':element_name})
 
             if (lits != '') and (objs != ''):
                 rule1['destinationPorts']= {'literals': lits, 'objects': objs} 
@@ -419,15 +566,26 @@ def CSV_policy(fmc1, acp_id, new_policy, database, object_db):
 
     
         if rule['commentHistoryList']:
+
+            # syntax: comment(user)[date]
             name_separator='('
             date_separator='['
+            search_chars=')['    
             lits = []
             lits2 = []
             for element in rule['commentHistoryList'].split(';'):
                 element_name = element.strip()
+                """
                 comment =element_name.split(name_separator)[0]
                 username = element_name.split(name_separator)[1].split(date_separator)[0][:-1]
                 date = element_name.split(name_separator)[1].split(date_separator)[1][:-1]
+                """
+                first_half = element_name.split(search_chars)[0]
+                comment1 =first_half.split(name_separator)[0]
+                comment = comment1.encode('utf_8','strict').decode('utf_8', 'strict')
+                username=first_half.split(name_separator)[-1]
+                date= element_name.split(search_chars)[1][:-1]
+
 
                 lits.append({'user': {'name': username, 'type': 'User'}, 'comment': comment, 'date': date } )
                 lits2.append(comment)
@@ -440,11 +598,24 @@ def CSV_policy(fmc1, acp_id, new_policy, database, object_db):
         number_of_bulk_rule = number_of_bulk_rule+1
         bulk_rules.append(rule1)
 
-        if number_of_bulk_rule ==  MAX_BULK or number_of_bulk_rule == len(database):
-            print(">> Uploading the rules..")    
-            fmc1.createRule(bulk_rules, acp_id)
+        if number_of_bulk_rule ==  MAX_BULK or linenumber == len(database):
+            print(">> Uploading the rules..")  
+
+            # If a category is specified, a section cannot be specified.
+            if current_category != "--Undefined--":
+                section_cat = "&category="+current_category
+            else:    
+                section_cat = "&section="+current_section.lower()
+
+            r = fmc1.createRule(bulk_rules, acp_id, section_cat= section_cat)
+            if  r != True:
+                print(">>")
+                exit() 
             number_of_bulk_rule = 0
             bulk_rules = []
+        # DEBUG
+        #print (">>DEBUG Rule1:"+ json.dumps(rule1, indent=4))
+
     
 def main():
 

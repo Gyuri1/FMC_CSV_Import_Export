@@ -1,6 +1,15 @@
 #
 # FMC ACP export to CSV tool 
-# 
+#
+#  Version: 2.0
+#  Updated:  applications category 
+#            user category 
+#  
+#  Version: 2.1
+#  Updated: TCP and UDP Port Condition without port info 
+
+
+
 
 # import required dependencies
 import sys
@@ -62,6 +71,15 @@ def parse_rule(rule, object_db):
     R_SYSLOG    = ''
     R_SNMP      = ''
     R_COMMENT   = ''
+
+    #DEBUG
+    #if rule['name'] =="XX":
+    #    print(rule)
+
+    # test
+    #if rule['name'] == 'XX':
+    #    print(">>", rule['destinationPorts'])
+
 
     if 'section' in rule['metadata']:
         R_SECTION = rule['metadata']['section']
@@ -190,16 +208,25 @@ def parse_rule(rule, object_db):
     # Users
     if 'users' in rule:
         temp_list = []
+
+        #print("users:", rule['users'])
         for i in rule['users']['objects']:
             store_an_object(object_db, i)
             if 'realm' in i:
                 store_an_object(object_db, i['realm'])
-                temp_list.append(str(i['realm']['name'])+"\\" + i['name'])
+            # all user case ( domain\*) 
+            if i['type'] == 'Realm':
+                temp_list.append(str(i['name'])+"/" +'*')
+            else:    
+                temp_list.append(str(i['realm']['name'])+"/" + i['name'])
 
         if len(temp_list) > 1:
             R_USERS = '; '.join(temp_list)
         else:
             R_USERS = temp_list[0]
+
+        #print("R_USERS:", R_USERS)
+         
 
         """    
         if 'id' in rule:
@@ -211,16 +238,67 @@ def parse_rule(rule, object_db):
 
     # Application Filters
     if 'applications' in rule:
-        temp_list =[]
-        for i in rule['applications']['applications']:
-                temp_list.append(i['name'])  
-                store_an_object(object_db, i)
 
-        if len(temp_list) > 1:
-            R_APPS = '; '.join(temp_list)
+        print(">>APP", rule['applications'])
+
+        R_APPS=''
+        appfilter = ''
+
+        if 'applications' in rule['applications']:
+            temp_list =[]
+            for i in rule['applications']['applications']:
+                    temp_list.append(i['name'])  
+                    store_an_object(object_db, i)
+
+            if len(temp_list) > 1:
+                R_APPS = '; '.join(temp_list)
+            else:
+                R_APPS = temp_list[0]
+
+        if 'inlineApplicationFilters' in rule['applications']:
+
+            temp_list =[]
+            for i in rule['applications']['inlineApplicationFilters']:
+                    if 'search' in i:
+                        temp_list.append('Filter:'+i['search'])
+
+                    if 'categories' in i:
+                        for j in i['categories']:
+                            temp_list.append('Categories:'+j['name'])
+                            store_an_object(object_db, j) 
+                    if 'risks' in i:
+                        for j in i['risks'] :
+                            temp_list.append('Risks:'+j['name']) 
+                            store_an_object(object_db, j)
+
+                    if 'applicationTypes' in i:
+                        for j in i['applicationTypes'] :
+                            temp_list.append('Types:'+j['name']) 
+                            store_an_object(object_db, j)
+
+                    if 'tags' in i:
+                        for j in i['tags'] :
+                            temp_list.append('Tags:'+j['name']) 
+                            store_an_object(object_db, j)
+
+                    if 'productivities' in i:
+                        for j in i['productivities'] :
+                            temp_list.append('Business Relevance:'+j['name']) 
+                            store_an_object(object_db, j)        
+
+            if len(temp_list) > 1:
+                appfilter = '; '.join(temp_list)
+            else:
+                appfilter = temp_list[0]
+
+        if R_APPS:
+            if appfilter: 
+                R_APPS = R_APPS+ "; " + appfilter
         else:
-            R_APPS = temp_list[0]
-    
+            R_APPS = appfilter
+
+        print(">> R_APPS:", R_APPS )
+
 
     # Source Ports
     if 'sourcePorts' in rule:
@@ -231,9 +309,23 @@ def parse_rule(rule, object_db):
             temp_list = []
             for i in rule['sourcePorts']['literals']:
                 if i['protocol'] == '6':
-                    temp_list.append(f'TCP:{i["port"]}')
+                    if "port" in i:
+                        temp_list.append(f'TCP:{i["port"]}')
+                    else:
+                        temp_list.append(f'TCP')
                 elif i['protocol'] == '17':
-                    temp_list.append(f'UDP:{i["port"]}')
+                    if "port" in i:
+                        temp_list.append(f'UDP:{i["port"]}')
+                    else:
+                        temp_list.append(f'UDP')
+                elif i['protocol'] == '1':
+                    if "icmpType" in i:
+                        temp_list.append(f'ICMP:{i["icmpType"]}')
+                    else:
+                        temp_list.append(f'ICMP')
+
+                else:
+                    temp_list.append(i['protocol'])  
             if len(temp_list) > 1:
                 lits = '; '.join(temp_list)
             else:
@@ -258,6 +350,7 @@ def parse_rule(rule, object_db):
 
     # Destination Ports
     if 'destinationPorts' in rule:
+
         #print(rule['destinationPorts'])
         lits = ''
         objs = ''
@@ -265,15 +358,31 @@ def parse_rule(rule, object_db):
             temp_list = []
             for i in rule['destinationPorts']['literals']:
                 if i['protocol'] == '6':
-                    temp_list.append(f'TCP:{i["port"]}')
+                    if "port" in i:
+                        temp_list.append(f'TCP:{i["port"]}')
+                    else:
+                        temp_list.append(f'TCP')
                 elif i['protocol'] == '17':
-                    temp_list.append(f'UDP:{i["port"]}')
+                    if "port" in i:
+                        temp_list.append(f'UDP:{i["port"]}')
+                    else:
+                        temp_list.append(f'UDP')
+                elif i['protocol'] == '1':
+                    if "icmpType" in i:
+                        temp_list.append(f'ICMP:{i["icmpType"]}')
+                    else:
+                        temp_list.append(f'ICMP')        
+
                 else:
-                    temp_list.append(i['protocol'])         
+                    temp_list.append(i['protocol']) 
+
+
             if len(temp_list) > 1:
                 lits = '; '.join(temp_list)
             else:
                 lits = temp_list[0]
+
+
         if 'objects' in rule['destinationPorts']:
             temp_list =[]
             for i in rule['destinationPorts']['objects']:
