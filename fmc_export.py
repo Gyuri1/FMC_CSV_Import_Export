@@ -238,8 +238,9 @@ def parse_rule(rule, object_db):
 
     # Application Filters
     if 'applications' in rule:
-
-        print(">>APP", rule['applications'])
+        
+        #DEBUG
+        #print(">>APP", rule['applications'])
 
         R_APPS=''
         appfilter = ''

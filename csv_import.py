@@ -36,7 +36,7 @@ def find_id(object_db, name, obj_type):
 def find_type(object_db, name):
     r=''
     for i in object_db:
-        if (i['name']==name) and (i['type']== 'Host' or i['type']== 'Network' or i['type']== 'Continent' or i['type']== 'Country'  ):
+        if (i['name']==name) and (i['type']== 'Host' or i['type']== 'Network' or i['type']== 'Continent' or i['type']== 'Country' or i['type']== 'NetworkGroup' or i['type']== 'Range' or i['type']== 'FQDN'):
             r=i['type']
     return r  
 
@@ -208,13 +208,18 @@ def CSV_policy(fmc1, acp_id, new_policy, database, object_db):
                     obj_type= find_type(object_db, element_name)
                     objs.append( {'type': obj_type,  'id': object_id, 'name': element_name})
 
-
             if (lits != '') and (objs != ''):
                 rule1['destinationNetworks']= {'literals': lits, 'objects': objs} 
             elif lits != '':
                 rule1['destinationNetworks'] = {'literals': lits}
             elif objs != '':
                 rule1['destinationNetworks'] = {'objects': objs}
+
+
+            # DEBUG
+            # if linenumber == 10:
+            #    print(f">> Original: {json.dumps(rule['destinationNetworks'], indent=4)}")
+            #    print(f">> Processed: {json.dumps(rule1['destinationNetworks'], indent=4)}")    
 
 
         if rule['vlanTags']:  
