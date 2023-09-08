@@ -9,8 +9,8 @@
 #  Check the URLCategory REAL NAME with ;
 #  element_name.split(reputation_separator)[0]
 #
-#  Version 2.0 
-#  Updated:
+#  Version 2.1
+#  Updated: 8 Sept
 
 
 # import required dependencies
@@ -50,8 +50,10 @@ def CSV_policy(fmc1, acp_id, new_policy, database, object_db):
     #MAX_BULK = 500
     MAX_BULK = 500
 
+
     current_section= database[0]['section']
     current_category = database[0]['category']
+
 
     print("Creating rules:") 
     print("Number of lines: ", len(database))
@@ -66,11 +68,6 @@ def CSV_policy(fmc1, acp_id, new_policy, database, object_db):
 
         # Warning: Category names are unique
 
-        # Check Category:
-        if (rule['category'] !='--Undefined--') and (rule['category'] !='') and (rule['category'] not in known_categories):
-            known_categories.append(rule['category'])
-            fmc1.createPolicyCat(acp_id, str(rule['category']), str(rule['section']), where_to=str(linenumber-1) )
-            print(f"Creating New Category: {rule['category']}")
 
         rule1={
               "action": "ALLOW",
@@ -118,6 +115,14 @@ def CSV_policy(fmc1, acp_id, new_policy, database, object_db):
 
         print(f"{linenumber} {current_section} {current_category} Rule name:{rule1['name']}")
          
+
+        # Check Category:
+        if (rule['category'] !='--Undefined--') and (rule['category'] !='') and (rule['category'] not in known_categories):
+            known_categories.append(rule['category'])
+            fmc1.createPolicyCat(acp_id, str(rule['category']), str(rule['section']), where_to=str(linenumber-1) )
+            print(f"Creating New Category: {rule['category']}")
+
+
         # Check the fields and copy to rule1
         if rule['sourceZones']:
              rule1['sourceZones'] =   {'objects':[{'name': element.strip(),'type': 'SecurityZone', "id":  find_id(object_db, element.strip(), 'SecurityZone')  } for element in rule['sourceZones'].split(';')]}     
